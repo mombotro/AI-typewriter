@@ -1,1 +1,3 @@
-// Flows will be imported for their side effects in this file.
+import '@/ai/flows/text-continuation.ts';
+import '@/ai/flows/targeted-revisions.ts';
+import '@/ai/flows/contextual-suggestions.ts';
