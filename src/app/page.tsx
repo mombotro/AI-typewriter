@@ -88,10 +88,16 @@ export default function Home() {
     try {
       const result = await targetedRevisions({
         selectedText: selectedText,
-        fullDocument: text,
+        fullDocument: selectedText,
         revisionRequest: targetedRevisionInstructions || 'Rewrite',
       });
-      setText(result.revisedText);
+      setText(prevText => {
+         const start = text.indexOf(selectedText);
+         if (start === -1) {
+           return text;
+         }
+         return text.substring(0, start) + result.revisedText + text.substring(start + selectedText.length);
+      });
     } catch (error: any) {
       toast({
         variant: 'destructive',
