@@ -19,6 +19,7 @@ import {textContinuation} from '@/ai/flows/text-continuation';
 import {targetedRevisions} from '@/ai/flows/targeted-revisions';
 import {Icons} from '@/components/icons';
 import {CopyToClipboard} from '@/components/copy-to-clipboard';
+import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger} from '@/components/ui/alert-dialog';
 
 export default function Home() {
   const [text, setText] = useState('');
@@ -26,11 +27,16 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<
     {suggestion: string; reasoning: string}[]
   >([]);
+  const [targetedRevisionOpen, setTargetedRevisionOpen] = useState(false);
+  const [globalEditOpen, setGlobalEditOpen] = useState(false);
+  const [targetedRevisionInstructions, setTargetedRevisionInstructions] = useState('');
+  const [globalEditInstructions, setGlobalEditInstructions] = useState('');
+  const [selectedText, setSelectedText] = useState('');
 
   const handleTextContinuation = async () => {
     try {
       const result = await textContinuation({existingText: text});
-      setText(result.continuedText);
+      setText(prevText => prevText + result.continuedText);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -64,12 +70,26 @@ export default function Home() {
     });
   };
 
+  const handleOpenTargetedRevision = () => {
+    if (text) {
+      // Sets selected text
+      setSelectedText(text);
+      setTargetedRevisionOpen(true);
+    } else {
+      toast({
+        title: 'No Text Selected',
+        description: 'Please enter text in the editor.',
+      });
+    }
+  };
+
   const handleTargetedRevisions = async () => {
+    setTargetedRevisionOpen(false);
     try {
       const result = await targetedRevisions({
-        selectedText: text,
+        selectedText: selectedText,
         fullDocument: text,
-        revisionRequest: 'Rewrite',
+        revisionRequest: targetedRevisionInstructions || 'Rewrite',
       });
       setText(result.revisedText);
     } catch (error: any) {
@@ -82,10 +102,25 @@ export default function Home() {
   };
 
   const handleGlobalEditHighlighting = () => {
-    toast({
-      title: 'Global Edit Highlighting',
-      description: 'Feature coming soon!',
-    });
+    setGlobalEditOpen(true);
+  };
+
+  const handleGlobalEdit = async () => {
+     setGlobalEditOpen(false);
+    try {
+      const result = await targetedRevisions({
+        selectedText: text,
+        fullDocument: text,
+        revisionRequest: globalEditInstructions || 'Rewrite',
+      });
+      setText(result.revisedText);
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+      });
+    }
   };
 
   return (
@@ -162,7 +197,7 @@ export default function Home() {
               <Button onClick={handleTextContinuation} className="mr-2">
                 Text Continuation
               </Button>
-              <Button onClick={handleTargetedRevisions} className="mr-2">
+              <Button onClick={handleOpenTargetedRevision} className="mr-2">
                 Targeted Revisions
               </Button>
               <Button onClick={handleGlobalEditHighlighting}>
@@ -177,6 +212,52 @@ export default function Home() {
             className="min-h-[calc(100vh-10rem)]"
           />
         </div>
+         <AlertDialog open={targetedRevisionOpen} onOpenChange={setTargetedRevisionOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Targeted Revision Instructions</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Enter specific instructions for revising the selected text.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Textarea
+                    placeholder="Enter revision instructions here..."
+                    value={targetedRevisionInstructions}
+                    onChange={(e) => setTargetedRevisionInstructions(e.target.value)}
+                  />
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setTargetedRevisionInstructions('')}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleTargetedRevisions}>Revise</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+           <AlertDialog open={globalEditOpen} onOpenChange={setGlobalEditOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Global Edit Instructions</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Enter instructions for global edits on the entire document.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Textarea
+                    placeholder="Enter global edit instructions here..."
+                    value={globalEditInstructions}
+                    onChange={(e) => setGlobalEditInstructions(e.target.value)}
+                  />
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setGlobalEditInstructions('')}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleGlobalEdit}>Apply Global Edit</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
       </div>
     </SidebarProvider>
   );
