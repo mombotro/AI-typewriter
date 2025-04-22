@@ -73,7 +73,10 @@ export default function Home() {
   const handleOpenTargetedRevision = () => {
     if (text) {
       // Sets selected text
-      setSelectedText(text);
+      const selection = window.getSelection();
+      if (selection) {
+        setSelectedText(selection.toString());
+      }
       setTargetedRevisionOpen(true);
     } else {
       toast({
@@ -88,7 +91,7 @@ export default function Home() {
     try {
       const result = await targetedRevisions({
         selectedText: selectedText,
-        fullDocument: selectedText,
+        fullDocument: text,
         revisionRequest: targetedRevisionInstructions || 'Rewrite',
       });
       setText(prevText => {
@@ -98,6 +101,7 @@ export default function Home() {
          }
          return text.substring(0, start) + result.revisedText + text.substring(start + selectedText.length);
       });
+      setSelectedText('');
     } catch (error: any) {
       toast({
         variant: 'destructive',
