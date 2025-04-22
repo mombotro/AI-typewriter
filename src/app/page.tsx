@@ -7,7 +7,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
@@ -15,7 +14,11 @@ import {
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {contextualSuggestions} from '@/ai/flows/contextual-suggestions';
 import {toast} from '@/hooks/use-toast';
-import {TargetedRevisionsOutput} from '@/ai/flows/targeted-revisions';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {textContinuation} from '@/ai/flows/text-continuation';
+import {targetedRevisions} from '@/ai/flows/targeted-revisions';
+import {Icons} from '@/components/icons';
+import {CopyToClipboard} from '@/components/copy-to-clipboard';
 
 export default function Home() {
   const [text, setText] = useState('');
@@ -26,12 +29,8 @@ export default function Home() {
 
   const handleTextContinuation = async () => {
     try {
-      //   const result = await textContinuation({existingText: text});
-      //   setText(result.continuedText);
-      toast({
-        title: 'Text Continuation',
-        description: 'Feature coming soon!',
-      });
+      const result = await textContinuation({existingText: text});
+      setText(result.continuedText);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -57,14 +56,22 @@ export default function Home() {
     }
   };
 
+  const handleSaveSuggestion = (suggestion: string) => {
+    setContextText(prevContext => prevContext + '\n' + suggestion);
+    toast({
+      title: 'Suggestion Saved',
+      description: 'The suggestion has been saved to the context.',
+    });
+  };
+
   const handleTargetedRevisions = async () => {
     try {
-      //   const result = await targetedRevisions({selectedText: text, fullDocument: text, revisionRequest: "Rewrite"});
-      //   setText(result.revisedText);
-      toast({
-        title: 'Targeted Revisions',
-        description: 'Feature coming soon!',
+      const result = await targetedRevisions({
+        selectedText: text,
+        fullDocument: text,
+        revisionRequest: 'Rewrite',
       });
+      setText(result.revisedText);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -89,41 +96,58 @@ export default function Home() {
             <h2 className="text-lg font-semibold">Context Panel</h2>
           </SidebarHeader>
           <SidebarContent>
-            <Card>
-              <CardHeader>
-                <CardTitle>Context</CardTitle>
-                <CardDescription>
-                  Provide context for the AI to generate better suggestions.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  placeholder="Enter context here..."
-                  value={contextText}
-                  onChange={e => setContextText(e.target.value)}
-                />
-                <Button onClick={handleContextualSuggestions} className="mt-2">
-                  Generate Suggestions
-                </Button>
-              </CardContent>
-            </Card>
-            {suggestions.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Suggestions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {suggestions.map((suggestion, index) => (
-                    <div key={index} className="mb-4">
-                      <p className="font-semibold">{suggestion.suggestion}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {suggestion.reasoning}
-                      </p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
+            <Tabs defaultValue="context" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="context">Context</TabsTrigger>
+                <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+              </TabsList>
+              <TabsContent value="context">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Context</CardTitle>
+                    <CardDescription>
+                      Provide context for the AI to generate better suggestions.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      placeholder="Enter context here..."
+                      value={contextText}
+                      onChange={e => setContextText(e.target.value)}
+                    />
+                    <Button onClick={handleContextualSuggestions} className="mt-2">
+                      Generate Suggestions
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="suggestions">
+                {suggestions.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Suggestions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {suggestions.map((suggestion, index) => (
+                        <div key={index} className="mb-4">
+                          <p className="font-semibold">{suggestion.suggestion}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {suggestion.reasoning}
+                          </p>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleSaveSuggestion(suggestion.suggestion)}
+                          >
+                            Save to Context
+                          </Button>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
           </SidebarContent>
           <SidebarFooter>
             <p className="text-sm text-muted-foreground">
