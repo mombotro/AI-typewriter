@@ -146,7 +146,7 @@ export default function Home() {
           </SidebarHeader>
           <SidebarContent>
             <Tabs defaultValue="suggestions" className="w-full">
-              <TabsList className="grid w-full grid-cols-1">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
                 <TabsTrigger value="saved">Saved Context</TabsTrigger>
               </TabsList>
@@ -338,3 +338,4 @@ export default function Home() {
     </SidebarProvider>
   );
 }
+
