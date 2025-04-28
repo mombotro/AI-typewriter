@@ -40,7 +40,7 @@ export default function Home() {
   const handleTextContinuation = async () => {
     try {
       const result = await textContinuation({existingText: text, savedContext: savedContext});
-      setText(prevText => prevText + result.continuedText);
+      setText(prevText =>  prevText + result.continuedText);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -162,10 +162,9 @@ export default function Home() {
           </SidebarHeader>
           <SidebarContent>
             <Tabs defaultValue="suggestions" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
                 <TabsTrigger value="saved">Saved Context</TabsTrigger>
-                 <TabsTrigger value="plotline">Plotline Outline</TabsTrigger>
               </TabsList>
               <TabsContent value="suggestions">
                 <Card>
@@ -225,41 +224,6 @@ export default function Home() {
                       value={savedContext}
                       onChange={e => setSavedContext(e.target.value)}
                     />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="plotline">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Plotline Outline</CardTitle>
-                    <CardDescription>
-                      Generate a plotline outline based on the provided context.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Textarea
-                      placeholder="Enter context for the plotline outline..."
-                      value={contextText}
-                      onChange={e => setContextText(e.target.value)}
-                    />
-                    <Button onClick={handleGeneratePlotlineOutline} className="mt-2">
-                      Generate Plotline Outline
-                    </Button>
-                    {plotlineOutlineText && (
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Plotline Outline</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <Textarea
-                            placeholder="Generated plotline outline will appear here..."
-                            value={plotlineOutlineText}
-                            readOnly
-                            className="min-h-[200px]"
-                          />
-                        </CardContent>
-                      </Card>
-                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -347,3 +311,4 @@ export default function Home() {
     </SidebarProvider>
   );
 }
+
