@@ -20,7 +20,6 @@ import {targetedRevisions} from '@/ai/flows/targeted-revisions';
 import {Icons} from '@/components/icons';
 import {CopyToClipboard} from '@/components/copy-to-clipboard';
 import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger} from '@/components/ui/alert-dialog';
-import {plotlineOutline} from '@/ai/flows/plotline-outline';
 
 export default function Home() {
   const [text, setText] = useState('');
@@ -35,7 +34,6 @@ export default function Home() {
   const [selectedText, setSelectedText] = useState('');
   const [showContextPanel, setShowContextPanel] = useState(true);
   const [savedContext, setSavedContext] = useState('');
-  const [plotlineOutlineText, setPlotlineOutlineText] = useState('');
 
   const handleTextContinuation = async () => {
     try {
@@ -137,21 +135,6 @@ export default function Home() {
     }
   };
 
-  const handleGeneratePlotlineOutline = async () => {
-    try {
-      const result = await plotlineOutline({
-        context: contextText,
-      });
-      setPlotlineOutlineText(result.outline);
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-      });
-    }
-  };
-
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
@@ -162,7 +145,7 @@ export default function Home() {
           </SidebarHeader>
           <SidebarContent>
             <Tabs defaultValue="suggestions" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-1">
                 <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
                 <TabsTrigger value="saved">Saved Context</TabsTrigger>
               </TabsList>
@@ -311,4 +294,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-
