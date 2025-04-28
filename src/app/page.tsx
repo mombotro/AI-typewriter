@@ -33,6 +33,7 @@ export default function Home() {
   const [globalEditInstructions, setGlobalEditInstructions] = useState('');
   const [selectedText, setSelectedText] = useState('');
   const [showContextPanel, setShowContextPanel] = useState(true);
+  const [savedContext, setSavedContext] = useState('');
 
   const handleTextContinuation = async () => {
     try {
@@ -64,7 +65,7 @@ export default function Home() {
   };
 
   const handleSaveSuggestion = (suggestion: string) => {
-    setContextText(prevContext => prevContext + '\n' + suggestion);
+    setSavedContext(prevContext => prevContext + '\n' + suggestion);
     toast({
       title: 'Suggestion Saved',
       description: 'The suggestion has been saved to the context.',
@@ -145,8 +146,8 @@ export default function Home() {
           <SidebarContent>
             <Tabs defaultValue="context" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="context">Context</TabsTrigger>
-                <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+                <TabsTrigger value="context">Suggestions</TabsTrigger>
+                <TabsTrigger value="saved">Saved Context</TabsTrigger>
               </TabsList>
               <TabsContent value="context">
                 <Card>
@@ -165,34 +166,49 @@ export default function Home() {
                     <Button onClick={handleContextualSuggestions} className="mt-2">
                       Generate Suggestions
                     </Button>
+                       {suggestions.length > 0 && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Suggestions</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            {suggestions.map((suggestion, index) => (
+                              <div key={index} className="mb-4">
+                                <p className="font-semibold">{suggestion.suggestion}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {suggestion.reasoning}
+                                </p>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => handleSaveSuggestion(suggestion.suggestion)}
+                                >
+                                  Save to Context
+                                </Button>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      )}
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="suggestions">
-                {suggestions.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Suggestions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {suggestions.map((suggestion, index) => (
-                        <div key={index} className="mb-4">
-                          <p className="font-semibold">{suggestion.suggestion}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {suggestion.reasoning}
-                          </p>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => handleSaveSuggestion(suggestion.suggestion)}
-                          >
-                            Save to Context
-                          </Button>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                )}
+               <TabsContent value="saved">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Saved Context</CardTitle>
+                    <CardDescription>
+                      Saved context for the editor.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      placeholder="Saved context will appear here..."
+                      value={savedContext}
+                      onChange={e => setSavedContext(e.target.value)}
+                    />
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </SidebarContent>
