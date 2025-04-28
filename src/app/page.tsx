@@ -209,7 +209,7 @@ export default function Home() {
               <TabsContent value="suggestions">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Context</CardTitle>
+                    <CardTitle>Suggestions</CardTitle>
                     <CardDescription>
                       Provide context for the AI to generate better suggestions.
                     </CardDescription>
@@ -284,31 +284,28 @@ export default function Home() {
               onChange={(e) => setApiKey(e.target.value)}
               className="mb-4"
             />
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-semibold">Text Editor</h1>
+            <div className="flex justify-start items-center mb-4 space-x-2">
+            <Button onClick={handleTextContinuation} className="">
+              Text Continuation
+            </Button>
+            <Button onClick={handleOpenTargetedRevision} className="">
+              Targeted Revisions
+            </Button>
+            <Button onClick={handleGlobalEditHighlighting}>
+              Global Edit
+            </Button>
+            <Button size="sm" onClick={() => setShowHelp(true)}>
+              Help
+            </Button>
              <Button size="sm" onClick={() => setShowContextPanel(!showContextPanel)}>
-               {showContextPanel ? 'Hide' : 'Show'} Context Panel
-              </Button>
-              <Button size="sm" onClick={() => setShowHelp(true)}>
-                Help
-              </Button>
-            <div>
-              <Button onClick={handleTextContinuation} className="mr-2">
-                Text Continuation
-              </Button>
-              <Button onClick={handleOpenTargetedRevision} className="mr-2">
-                Targeted Revisions
-              </Button>
-              <Button onClick={handleGlobalEditHighlighting}>
-                Global Edit Highlighting
-              </Button>
-            </div>
+              {showContextPanel ? 'Hide Context' : 'Show Context'}
+            </Button>
           </div>
           <Textarea
             placeholder="Start writing here..."
             value={text}
             onChange={e => setText(e.target.value)}
-            className="min-h-[calc(100vh-10rem)]"
+            className="min-h-[calc(100vh-15rem)] rounded-lg border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
           />
         </div>
          <AlertDialog open={targetedRevisionOpen} onOpenChange={setTargetedRevisionOpen}>
@@ -385,7 +382,7 @@ export default function Home() {
                     click this button to make targeted revisions.
                   </p>
                   <p>
-                    <b>Global Edit Highlighting:</b> Click this button to make
+                    <b>Global Edit:</b> Click this button to make
                     global edits to the entire document.
                   </p>
                   <p>
@@ -404,3 +401,4 @@ export default function Home() {
     </SidebarProvider>
   );
 }
+
