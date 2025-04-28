@@ -4,7 +4,7 @@
  *
  * - contextualSuggestions - A function that generates contextual suggestions based on user requests.
  * - ContextualSuggestionsInput - The input type for the contextualSuggestions function.
- * - ContextualSuggestionsOutput - The return type for the contextualSuggestions function.
+ * - ContextualSuggestionsOutput - The return type for the ContextualSuggestions function.
  */
 
 import {ai} from '@/ai/ai-instance';
@@ -13,6 +13,7 @@ import {z} from 'genkit';
 const ContextualSuggestionsInputSchema = z.object({
   request: z.string().describe('The user request for a suggestion (e.g., character development, plot idea).'),
   context: z.string().describe('The current writing context (e.g., current scene, character descriptions).'),
+  apiKey: z.string().describe('The API key to use for the contextual suggestions.'),
 });
 export type ContextualSuggestionsInput = z.infer<typeof ContextualSuggestionsInputSchema>;
 
@@ -36,6 +37,7 @@ const prompt = ai.definePrompt({
     schema: z.object({
       request: z.string().describe('The user request for a suggestion (e.g., character development, plot idea).'),
       context: z.string().describe('The current writing context (e.g., current scene, character descriptions).'),
+      apiKey: z.string().describe('The API key to use for the contextual suggestions.'),
     }),
   },
   output: {

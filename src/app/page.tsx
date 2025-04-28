@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Textarea} from '@/components/ui/textarea';
 import {Button} from '@/components/ui/button';
 import {
@@ -20,6 +20,7 @@ import {targetedRevisions} from '@/ai/flows/targeted-revisions';
 import {Icons} from '@/components/icons';
 import {CopyToClipboard} from '@/components/copy-to-clipboard';
 import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger} from '@/components/ui/alert-dialog';
+import {Input} from "@/components/ui/input";
 
 export default function Home() {
   const [text, setText] = useState('');
@@ -35,10 +36,35 @@ export default function Home() {
   const [showContextPanel, setShowContextPanel] = useState(true);
   const [savedContext, setSavedContext] = useState('');
   const [showHelp, setShowHelp] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem('apiKey');
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('apiKey', apiKey);
+    } else {
+      localStorage.removeItem('apiKey');
+    }
+  }, [apiKey]);
 
   const handleTextContinuation = async () => {
+    if (!apiKey) {
+      toast({
+        variant: 'destructive',
+        title: 'API Key Required',
+        description: 'Please enter your API key.',
+      });
+      return;
+    }
+
     try {
-      const result = await textContinuation({existingText: text, savedContext: savedContext});
+      const result = await textContinuation({existingText: text, savedContext: savedContext, apiKey: apiKey});
       setText(prevText =>  prevText + result.continuedText);
     } catch (error: any) {
       toast({
@@ -50,10 +76,20 @@ export default function Home() {
   };
 
   const handleContextualSuggestions = async () => {
+      if (!apiKey) {
+        toast({
+          variant: 'destructive',
+          title: 'API Key Required',
+          description: 'Please enter your API key.',
+        });
+        return;
+      }
+
     try {
       const result = await contextualSuggestions({
         request: 'Suggest character development and plot ideas',
         context: contextText,
+        apiKey: apiKey
       });
       setSuggestions(result.suggestions);
     } catch (error: any) {
@@ -90,12 +126,22 @@ export default function Home() {
   };
 
   const handleTargetedRevisions = async () => {
+     if (!apiKey) {
+        toast({
+          variant: 'destructive',
+          title: 'API Key Required',
+          description: 'Please enter your API key.',
+        });
+        return;
+      }
+
     setTargetedRevisionOpen(false);
     try {
       const result = await targetedRevisions({
         selectedText: selectedText,
         fullDocument: text,
         revisionRequest: targetedRevisionInstructions || 'Rewrite',
+        apiKey: apiKey
       });
       setText(prevText => {
          const start = text.indexOf(selectedText);
@@ -119,12 +165,22 @@ export default function Home() {
   };
 
   const handleGlobalEdit = async () => {
+      if (!apiKey) {
+        toast({
+          variant: 'destructive',
+          title: 'API Key Required',
+          description: 'Please enter your API key.',
+        });
+        return;
+      }
+
      setGlobalEditOpen(false);
     try {
       const result = await targetedRevisions({
         selectedText: text,
         fullDocument: text,
         revisionRequest: globalEditInstructions || 'Rewrite',
+        apiKey: apiKey
       });
       setText(result.revisedText);
     } catch (error: any) {
@@ -221,6 +277,13 @@ export default function Home() {
         </Sidebar>
         )}
         <div className="flex-1 p-4">
+         <Input
+              type="password"
+              placeholder="Enter your API key"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="mb-4"
+            />
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-semibold">Text Editor</h1>
              <Button size="sm" onClick={() => setShowContextPanel(!showContextPanel)}>
@@ -325,6 +388,9 @@ export default function Home() {
                     <b>Global Edit Highlighting:</b> Click this button to make
                     global edits to the entire document.
                   </p>
+                  <p>
+                      <b>API Key:</b> Enter your API Key to use the application.
+                  </p>
                 </div>
               </div>
               <AlertDialogFooter>
@@ -338,4 +404,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-

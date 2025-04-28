@@ -1,4 +1,3 @@
-// src/ai/flows/targeted-revisions.ts
 'use server';
 
 /**
@@ -6,7 +5,7 @@
  *
  * - targetedRevisions - A function that handles the targeted revisions process.
  * - TargetedRevisionsInput - The input type for the targetedRevisions function.
- * - TargetedRevisionsOutput - The return type for the targetedRevisions function.
+ * - TargetedRevisionsOutput - The return type for the TargetedRevisions function.
  */
 
 import {ai} from '@/ai/ai-instance';
@@ -16,6 +15,7 @@ const TargetedRevisionsInputSchema = z.object({
   selectedText: z.string().describe('The text selected by the user for revision.'),
   fullDocument: z.string().describe('The entire document content for context.'),
   revisionRequest: z.string().describe('The specific revision request from the user (e.g., rewrite, enhance, simplify).'),
+  apiKey: z.string().describe('The API key to use for the targeted revisions.'),
 });
 export type TargetedRevisionsInput = z.infer<typeof TargetedRevisionsInputSchema>;
 
@@ -36,6 +36,7 @@ const targetedRevisionsPrompt = ai.definePrompt({
       selectedText: z.string().describe('The text selected by the user for revision.'),
       fullDocument: z.string().describe('The entire document content for context.'),
       revisionRequest: z.string().describe('The specific revision request from the user (e.g., rewrite, enhance, simplify).'),
+      apiKey: z.string().describe('The API key to use for the targeted revisions.'),
     }),
   },
   output: {
@@ -55,7 +56,7 @@ Full Document:
 Revision Request:
 {{revisionRequest}}
 
-Revised Text:`, // Removed conditional logic and direct function calls from Handlebars
+Revised Text:`,
 });
 
 const targetedRevisionsFlow = ai.defineFlow<

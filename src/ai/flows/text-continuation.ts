@@ -4,7 +4,7 @@
  *
  * - textContinuation - A function that handles the text continuation process.
  * - TextContinuationInput - The input type for the textContinuation function.
- * - TextContinuationOutput - The return type for the textContinuation function.
+ * - TextContinuationOutput - The return type for the TextContinuation function.
  */
 
 import {ai} from '@/ai/ai-instance';
@@ -13,6 +13,7 @@ import {z} from 'genkit';
 const TextContinuationInputSchema = z.object({
   existingText: z.string().describe('The existing text to continue from.'),
   savedContext: z.string().optional().describe('Saved context to influence the continuation.'),
+  apiKey: z.string().describe('The API key to use for the text continuation.'),
 });
 export type TextContinuationInput = z.infer<typeof TextContinuationInputSchema>;
 
@@ -31,6 +32,7 @@ const prompt = ai.definePrompt({
     schema: z.object({
       existingText: z.string().describe('The existing text to continue from.'),
       savedContext: z.string().optional().describe('Saved context to influence the continuation.'),
+      apiKey: z.string().describe('The API key to use for the text continuation.'),
     }),
   },
   output: {
@@ -54,4 +56,3 @@ async input => {
   const {output} = await prompt(input);
   return output!;
 });
-
