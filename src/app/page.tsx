@@ -37,7 +37,7 @@ export default function Home() {
 
   const handleTextContinuation = async () => {
     try {
-      const result = await textContinuation({existingText: text});
+      const result = await textContinuation({existingText: text, savedContext: savedContext});
       setText(prevText => prevText + result.continuedText);
     } catch (error: any) {
       toast({
@@ -294,3 +294,4 @@ export default function Home() {
     </SidebarProvider>
   );
 }
+
