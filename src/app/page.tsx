@@ -223,10 +223,10 @@ export default function Home() {
         <div className="flex-1 p-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-semibold">Text Editor</h1>
-             <Button onClick={() => setShowContextPanel(!showContextPanel)}>
+             <Button size="sm" onClick={() => setShowContextPanel(!showContextPanel)}>
                {showContextPanel ? 'Hide' : 'Show'} Context Panel
               </Button>
-              <Button onClick={() => setShowHelp(true)}>
+              <Button size="sm" onClick={() => setShowHelp(true)}>
                 Help
               </Button>
             <div>
@@ -338,4 +338,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-
