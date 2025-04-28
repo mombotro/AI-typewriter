@@ -34,6 +34,7 @@ export default function Home() {
   const [selectedText, setSelectedText] = useState('');
   const [showContextPanel, setShowContextPanel] = useState(true);
   const [savedContext, setSavedContext] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
 
   const handleTextContinuation = async () => {
     try {
@@ -225,6 +226,9 @@ export default function Home() {
              <Button onClick={() => setShowContextPanel(!showContextPanel)}>
                {showContextPanel ? 'Hide' : 'Show'} Context Panel
               </Button>
+              <Button onClick={() => setShowHelp(true)}>
+                Help
+              </Button>
             <div>
               <Button onClick={handleTextContinuation} className="mr-2">
                 Text Continuation
@@ -290,7 +294,48 @@ export default function Home() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+           <AlertDialog open={showHelp} onOpenChange={setShowHelp}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Help</AlertDialogTitle>
+                <AlertDialogDescription>
+                  How to use Contextual Writer
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <p>
+                    <b>Text Editor:</b> Start writing your story, article, or
+                    other content here.
+                  </p>
+                  <p>
+                    <b>Context Panel:</b> Use the Context Panel to generate
+                    suggestions, save context, and more.
+                  </p>
+                  <p>
+                    <b>Text Continuation:</b> Click this button to continue
+                    writing in the style, tone, and direction of your existing
+                    text.
+                  </p>
+                  <p>
+                    <b>Targeted Revisions:</b> Highlight a section of text and
+                    click this button to make targeted revisions.
+                  </p>
+                  <p>
+                    <b>Global Edit Highlighting:</b> Click this button to make
+                    global edits to the entire document.
+                  </p>
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setShowHelp(false)}>
+                  Close
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
       </div>
     </SidebarProvider>
   );
 }
+
