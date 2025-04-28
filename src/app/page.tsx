@@ -32,6 +32,7 @@ export default function Home() {
   const [targetedRevisionInstructions, setTargetedRevisionInstructions] = useState('');
   const [globalEditInstructions, setGlobalEditInstructions] = useState('');
   const [selectedText, setSelectedText] = useState('');
+  const [showContextPanel, setShowContextPanel] = useState(true);
 
   const handleTextContinuation = async () => {
     try {
@@ -136,6 +137,7 @@ export default function Home() {
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
+      {showContextPanel && (
         <Sidebar className="w-80 border-r">
           <SidebarHeader>
             <h2 className="text-lg font-semibold">Context Panel</h2>
@@ -200,9 +202,13 @@ export default function Home() {
             </p>
           </SidebarFooter>
         </Sidebar>
+        )}
         <div className="flex-1 p-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-semibold">Text Editor</h1>
+             <Button onClick={() => setShowContextPanel(!showContextPanel)}>
+               {showContextPanel ? 'Hide' : 'Show'} Context Panel
+              </Button>
             <div>
               <Button onClick={handleTextContinuation} className="mr-2">
                 Text Continuation
@@ -272,4 +278,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-
